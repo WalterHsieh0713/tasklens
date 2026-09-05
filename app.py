@@ -6,7 +6,7 @@ from streamlit_calendar import calendar
 
 from tracker import store
 
-st.set_page_config(page_title="Task Tracker", page_icon="\U0001F4C5", layout="wide")
+st.set_page_config(page_title="TaskLens", page_icon="\U0001F4C5", layout="wide")
 st_autorefresh(interval=8000, key="board_refresh")  # picks up watcher.py's updates automatically
 
 # Streamlit's own Settings menu lets a user force light/dark independently of
@@ -201,7 +201,7 @@ tasks = store.load_tasks()
 head_title, head_filters, head_create = st.columns([6, 1.4, 1.4], vertical_alignment="center")
 
 with head_title:
-    st.markdown("<p class='tt-title'>\U0001F4C5 Task Tracker</p>", unsafe_allow_html=True)
+    st.markdown("<p class='tt-title'>\U0001F4C5 TaskLens</p>", unsafe_allow_html=True)
     st.markdown(
         "<p class='tt-caption'>watcher.py runs separately, auto-advances tasks it detects on screen, and times how long you spend on each.</p>",
         unsafe_allow_html=True,
@@ -329,7 +329,7 @@ with board_tab:
         )
 
         for row_idx, task in enumerate(section_tasks):
-            row_text, row_status = st.columns([6, 1], vertical_alignment="center")
+            row_text, row_status = st.columns([5, 3], vertical_alignment="center")
             with row_text:
                 tag_html = f'<span class="tag"> &middot; {task["tag"]}</span>' if task.get("tag") else ""
                 due_html = ""
@@ -367,11 +367,12 @@ with board_tab:
                 )
                 st.markdown(row_html, unsafe_allow_html=True)
             with row_status:
-                new_status = st.selectbox(
+                new_status = st.segmented_control(
                     "Status",
                     options=list(STATUS_META.keys()),
                     format_func=lambda s: STATUS_META[s]["label"],
-                    index=list(STATUS_META.keys()).index(task["status"]),
+                    default=task["status"],
+                    required=True,
                     key=f"status-{task['id']}",
                     label_visibility="collapsed",
                 )
@@ -594,11 +595,12 @@ with calendar_tab:
             st.markdown(f"**{clicked_task['title']}**")
             if clicked_task.get("time_spent_seconds"):
                 st.caption(f"⏱️ {format_duration(clicked_task['time_spent_seconds'])} spent")
-            new_status = st.selectbox(
+            new_status = st.segmented_control(
                 "Status",
                 options=list(STATUS_META.keys()),
                 format_func=lambda s: STATUS_META[s]["label"],
-                index=list(STATUS_META.keys()).index(clicked_task["status"]),
+                default=clicked_task["status"],
+                required=True,
                 key=f"cal-status-{clicked_task['id']}",
             )
             if new_status != clicked_task["status"]:
