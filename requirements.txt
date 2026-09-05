@@ -1,0 +1,8 @@
+streamlit
+streamlit-autorefresh
+streamlit-calendar
+pywin32
+mss
+pillow
+rapidfuzz
+winocr
